@@ -1,14 +1,14 @@
 % =============================================================================
 % IEEE Conference Format -- Course Final Project Report
 % Compile with: pdflatex IEEE_PROJECT_REPORT.tex
-% Run twice for references.
+% Atıflar için 2--3 kez derleyin. .aux eskiyse silip yeniden derleyin.
+% Not: IEEEtran ile \usepackage{cite} çakışıp [?] üretebilir; kullanılmıyor.
 % =============================================================================
 
 \documentclass[conference]{IEEEtran}
 \IEEEoverridecommandlockouts
 
 \usepackage[utf8]{inputenc}
-\usepackage{cite}
 \usepackage{amsmath}
 \usepackage{url}
 \usepackage{graphicx}
@@ -118,9 +118,10 @@ In this project, the number of clusters is set to $k=10$. After clustering, the 
 \subsection{Recommendation Performance}
 The recommendation model is evaluated using top-1 accuracy and top-5 accuracy. Top-1 accuracy measures whether the first predicted journal matches the true journal. Top-5 accuracy measures whether the true journal appears among the five highest-ranked predicted journals.
 
-\begin{table}[h]
-\caption{Journal Recommendation Performance}
+\begin{table}[htbp]
 \centering
+\caption{Journal Recommendation Performance}
+\label{tab:performance}
 \begin{tabular}{lc}
 \toprule
 Metric & Score \\
@@ -129,7 +130,6 @@ Top-1 Accuracy & 0.66 \\
 Top-5 Accuracy & 0.91 \\
 \bottomrule
 \end{tabular}
-\label{tab:performance}
 \end{table}
 
 As shown in Table~\ref{tab:performance}, the model achieves approximately 0.66 top-1 accuracy and 0.91 top-5 accuracy on the stratified hold-out test set. Since the main project requirement is to list the top five most relevant journals, top-5 accuracy is the most important evaluation metric for this task.
@@ -153,9 +153,9 @@ This work was prepared as the final project for the Introduction to Data Mining 
 \section*{Project Repository}
 The source code and implementation files are available at:
 
-\noindent \url{https://github.com/your-username/your-repository-name}
+\noindent \url{https://github.com/MuharremK0/DataMiningH2}
 
-\begin{thebibliography}{00}
+\begin{thebibliography}{99}
 
 \bibitem{coursehw}
 Course handout, ``Data Mining Final Project,'' specification document, Apr. 2026.

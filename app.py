@@ -13,7 +13,6 @@ from dashboard.topic_clusters_tab import render_topic_clusters_tab
 # -----------------------------
 st.set_page_config(
     page_title="Computer Science Journal Finder",
-    page_icon="📚",
     layout="wide",
 )
 
@@ -48,9 +47,16 @@ if recommender_meta:
         f"dergi başına ≥{recommender_meta['min_samples_per_journal']} örnek)"
     )
     st.sidebar.markdown(
-        f"**Holdout (80/20):** Top-1 = {t1:.4f} · Top-5 = {t5:.4f} "
-        "(`journal_recommender_meta.json`, son `step8` çalıştırması)"
+        f"**Test (holdout 20%):** Top-1 = {t1:.4f} · Top-5 = {t5:.4f} "
+        "(`journal_recommender_meta.json`)"
     )
+    tr1 = recommender_meta.get("train_top1_accuracy")
+    tr5 = recommender_meta.get("train_top5_accuracy")
+    if tr1 is not None and tr5 is not None:
+        st.sidebar.markdown(
+            f"**Train (%80):** Top-1 = {tr1:.4f} · Top-5 = {tr5:.4f} "
+            "(eğitim verisinde ölçüm; genelde testten yüksektir)"
+        )
     if recommender_meta.get("n_journals") != n_journals_model:
         st.sidebar.caption(
             "Uyarı: meta dosyasındaki dergi sayısı ile model sınıfları eşleşmiyor; "
@@ -71,7 +77,7 @@ st.sidebar.markdown("- Top-5 Journal Prediction")
 # -----------------------------
 # MAIN TITLE
 # -----------------------------
-st.title("📚 Computer Science Journal Finder")
+st.title("Computer Science Journal Finder")
 st.write(
     "Özet (abstract) girerek en uygun 5 dergiyi alın. İsterseniz genişletilmiş alanlara "
     "başlık, anahtar kelime ve konu da ekleyerek eğitimle daha uyumlu tahmin alabilirsiniz."

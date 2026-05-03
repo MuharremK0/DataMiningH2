@@ -153,29 +153,50 @@ pipeline = Pipeline(
     ]
 )
 
+
+def top1_top5_accuracy(model, X, y_labels):
+    """Çok sınıflı dergi tahmini: Top-1 (accuracy) ve Top-5 isabet oranı."""
+    y_pred = model.predict(X)
+    top1 = accuracy_score(y_labels, y_pred)
+    proba = model.predict_proba(X)
+    classes = model.classes_
+    top5_hits = 0
+    n = len(y_labels)
+    for i in range(n):
+        idx = np.argsort(proba[i])[::-1][:5]
+        top5_labels = set(classes[idx])
+        if y_labels[i] in top5_labels:
+            top5_hits += 1
+    top5 = top5_hits / n if n else 0.0
+    return top1, top5
+
+
 X_train, X_test, y_train, y_test = train_test_split(
     X_df, y, test_size=0.2, random_state=42, stratify=y
 )
 
 pipeline.fit(X_train, y_train)
 
-y_pred = pipeline.predict(X_test)
-top1 = accuracy_score(y_test, y_pred)
+train_top1, train_top5 = top1_top5_accuracy(pipeline, X_train, y_train)
+test_top1, test_top5 = top1_top5_accuracy(pipeline, X_test, y_test)
 
-# top-5 accuracy
-proba = pipeline.predict_proba(X_test)
-classes = pipeline.classes_
-top5_hits = 0
-for i in range(len(y_test)):
-    idx = np.argsort(proba[i])[::-1][:5]
-    top5_labels = set(classes[idx])
-    if y_test[i] in top5_labels:
-        top5_hits += 1
-top5 = top5_hits / len(y_test)
-
-print("--- HOLDOUT METRICS (stratified 80/20) ---", flush=True)
-print(f"Top-1 accuracy: {top1:.4f}", flush=True)
-print(f"Top-5 accuracy: {top5:.4f}", flush=True)
+print("\n--- METRICS (stratified 80/20, same pipeline) ---", flush=True)
+print(
+    f"{'':12} {'Top-1':>10} {'Top-5':>10}   (örnek sayısı)",
+    flush=True,
+)
+print(
+    f"{'Train':12} {train_top1:10.4f} {train_top5:10.4f}   n={len(y_train)}",
+    flush=True,
+)
+print(
+    f"{'Test':12} {test_top1:10.4f} {test_top5:10.4f}   n={len(y_test)}",
+    flush=True,
+)
+print(
+    "Not: Train skorları aynı veri üzerinde ölçülür (beklenen olarak testten yüksek olabilir).\n",
+    flush=True,
+)
 
 meta = {
     "n_articles": int(X_df.shape[0]),
@@ -184,8 +205,12 @@ meta = {
     "min_samples_per_journal": min_samples_per_journal,
     "holdout_test_size": 0.2,
     "holdout_random_state": 42,
-    "holdout_top1_accuracy": float(top1),
-    "holdout_top5_accuracy": float(top5),
+    "train_n_samples": int(len(y_train)),
+    "train_top1_accuracy": float(train_top1),
+    "train_top5_accuracy": float(train_top5),
+    "test_n_samples": int(len(y_test)),
+    "holdout_top1_accuracy": float(test_top1),
+    "holdout_top5_accuracy": float(test_top5),
 }
 meta_path.write_text(json.dumps(meta, indent=2), encoding="utf-8")
 print("Meta saved:", meta_path, flush=True)

@@ -1,0 +1,14 @@
+{
+  "n_articles": 22966,
+  "n_journals": 406,
+  "min_words_abstract": 20,
+  "min_samples_per_journal": 5,
+  "holdout_test_size": 0.2,
+  "holdout_random_state": 42,
+  "train_n_samples": 18372,
+  "train_top1_accuracy": 0.9461680818637056,
+  "train_top5_accuracy": 0.9917265403875463,
+  "test_n_samples": 4594,
+  "holdout_top1_accuracy": 0.6634740966478014,
+  "holdout_top5_accuracy": 0.911406181976491
+}
