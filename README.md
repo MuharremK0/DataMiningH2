@@ -4,6 +4,55 @@ Bu belge, projedeki **adım dosyalarının (Step 1–9)** işlevlerini özetler;
 
 ---
 
+## Kurulum (sıfırdan — özet)
+
+Aşağıdaki adımlar, projeyi ilk kez açan biri için **çalıştırmak üzere gereken minimum**u özetler; her komutun iç mantığına girilmez.
+
+### Gerekli yazılımlar
+
+| Bileşen | Not |
+|--------|-----|
+| **Python 3** | 3.10 veya üzeri önerilir (pandas, scikit-learn ile uyum için). Kurulumda **pip** genelde birlikte gelir. |
+| **Terminal** | PowerShell, CMD veya WSL; proje klasöründe komut çalıştırılacak. |
+
+İsteğe bağlı ama iyi pratik: sanal ortam (`venv`) ile proje bağımlılıklarını sistem Python’undan ayırmak.
+
+### Paketlerin yüklenmesi
+
+Proje kökünde (bu dosyanın bulunduğu dizin):
+
+```bash
+py -m pip install -r requirements.txt
+```
+
+Linux/macOS’ta `python3` / `pip3` kullanıyorsanız eşdeğer komutlarla aynı dosyayı yükleyin. `requirements.txt` içinde **pandas, numpy, scikit-learn, joblib, streamlit, matplotlib** ve isteğe bağlı **jupyter, ipykernel** tanımlıdır.
+
+### Veritabanı ve dosya yolları
+
+- Pipeline’ın ilk aşamaları **`!sources/CompSciencePub.sqlite`** dosyasına bağlıdır; bu dosya repoda büyük olabilir veya ayrı paylaşılıyor olabilir — **mutlaka** belirtilen konumda (veya sizin seçtiğiniz konumda) bulunmalıdır.
+- `step1.py`, `step1.1.py`, `step5_enrich_dataset.py` içinde veritabanı yolu şu an **sabit (mutlak) Windows yolu** olarak yazılmış olabilir. Projeyi başka bir bilgisayara veya klasöre taşıdıysanız bu dosyalardaki `db_path` değerini kendi ortamınıza göre güncellemeniz gerekir.
+
+### Neyin çalışması için ne gerekir?
+
+| Amaç | Gereksinim |
+|------|------------|
+| **Step 1–2, 5** (CSV üretimi) | Python + yüklü paketler + geçerli `CompSciencePub.sqlite` yolu + sırayla önceki adımın çıktı CSV’si (Step 1.1 → Step 2 → …). |
+| **Step 3, 4, 6, 7** | İlgili script + genelde `step2_preprocessed_dataset.csv` veya `step5_enriched_dataset.csv` (belgedeki adımlara göre). |
+| **Step 8** (model dosyası) | `step5_enriched_dataset.csv` üretilmiş olmalı → çıktı: `journal_recommender_pipeline.pkl`. |
+| **Step 9** (kümeleme) | `step5_enriched_dataset.csv` → çıktı: `step9_clustered_dataset.csv`. |
+| **Streamlit arayüzü (`app.py`)** | Yüklü **streamlit** + **Journal Recommender** sekmesi için `journal_recommender_pipeline.pkl` + **Topic Clusters** sekmesi için `step9_clustered_dataset.csv`. Bu dosyalar yoksa ilgili sekmeler hata verir veya boş kalır; üretim sırası belgenin sonundaki “Önerilen çalıştırma sırası” ile uyumludur. |
+| **Jupyter not defteri** (`.ipynb`) | `requirements.txt` ile jupyter/ipykernel kurulu olmalı; kernel olarak proje ortamı seçilmelidir. |
+
+### Arayüzü çalıştırma
+
+```bash
+py -m streamlit run app.py
+```
+
+(`streamlit run app.py` da aynı işi görür, ortamınızda hangisi tanımlıysa.)
+
+---
+
 ## Veri kaynağı ve ek materyal
 
 | Konum | Açıklama |
