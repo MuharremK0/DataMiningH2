@@ -1,0 +1,52 @@
+Yaptığımız işi adım adım kısa özetlersem:
+
+1. Veritabanını doğruladık ve tabloları kontrol ettik.
+SQLite dosyasının gerçekten dolu ve kullanılabilir olduğundan emin olduk; çünkü doğru veri kaynağını açmadan diğer tüm adımlar boşa giderdi.
+
+2. Ana çalışma datasını oluşturduk.
+AcademicRecord, AcademicRecordAbstract ve Publication tablolarını join ederek makale başlığı, abstract ve dergi bilgisini tek tabloda topladık; journal finder için minimum gerekli veri buydu.
+
+3. Eksik ve kullanılamaz kayıtları temizledik.
+Abstract’ı olmayan kayıtları çıkardık; çünkü modelin girdisi metin olduğu için boş abstract’lı satırlar tahmin açısından işe yaramazdı.
+
+4. Metin ön işleme yaptık.
+HTML tag’lerini, gereksiz karakterleri ve boşlukları temizleyip metni normalize ettik; böylece modelin gürültü yerine anlamlı kelimelere odaklanmasını sağladık.
+
+5. Başlık ve abstract’tan ilk metin temsillerini ürettik.
+abstract_clean, title_clean ve birleşik text_for_model kolonlarını oluşturduk; bunun amacı farklı metin temsillerini deneyip hangisinin daha iyi çalıştığını görmekti.
+
+6. İlk baseline retrieval modelini kurduk.
+TF-IDF + cosine similarity ile benzer makaleleri bulup onların dergilerine göre top-5 öneri yaptık; bu, hızlı ve anlaşılır bir başlangıç çözümüydü.
+
+7. Düşük örnekli dergileri filtreledik.
+Çok az örnekli journal sınıfları train-test split’i bozduğu için minimum örnek eşiği koyduk; bu daha güvenilir evaluation yapmamızı sağladı.
+
+8. Baseline performansını ölçtük.
+Top-1 ve Top-5 accuracy hesaplayarak modelin gerçekten ne kadar iyi çalıştığını sayısal olarak gördük; çünkü ödevde yalnızca sistemi kurmak değil, sonucunu da göstermek önemliydi.
+
+9. abstract only ile title + abstract karşılaştırması yaptık.
+Başlığın modele katkı sağlayıp sağlamadığını test ettik; sonuçta title + abstract biraz daha iyi çıktı ve sonraki adımlar için bunu tercih ettik.
+
+10. Dataset’i zenginleştirdik.
+Keyword, keyword plus ve subject bilgilerini article bazında birleştirip ana tabloya ekledik; çünkü bu alanlar makalenin konusunu daha açık temsil ediyor ve dergi önerisini güçlendiriyordu.
+
+11. rich_text temsilini oluşturduk.
+Title, abstract, keyword, keyword plus ve subject alanlarını tek metinde birleştirdik; amaç modele sadece ham özet değil, konu etiketleriyle desteklenmiş daha güçlü bir içerik vermekti.
+
+12. Zengin metin temsilini karşılaştırdık.
+title_plus_abstract ile rich_text sonuçlarını kıyasladık ve rich_textin belirgin şekilde daha iyi olduğunu gördük; böylece en iyi metin temsili seçilmiş oldu.
+
+13. Logistic Regression tabanlı sınıflandırma modelini denedik.
+TF-IDF + Logistic Regression ile journal’ı doğrudan sınıflandırdık; retrieval yöntemine göre çok daha güçlü sonuç verdiği için bunu ana model olarak seçtik.
+
+14. En iyi journal finder modelini belirledik.
+Final olarak en başarılı çözümün TF-IDF + Logistic Regression + rich_text olduğunu gördük; bu model top-5 öneri görevini en iyi yerine getirdi.
+
+15. Final recommender scriptini hazırladık.
+Modeli ve vectorizer’ı kaydedip kullanıcı abstract girince top-5 dergi öneren çalışır bir demo oluşturduk; bu kısım ödevin ana ürün çıktısı oldu.
+
+16. Topic clustering yaptık.
+KMeans ile makaleleri konu kümelerine ayırdık; böylece ödevin ikinci gereksinimi olan subject area/topic cluster üretme kısmını da tamamladık.
+
+17. Cluster’ları yorumladık.
+Elde edilen kümeleri cloud computing, data mining, bioinformatics, networks, fuzzy logic gibi anlamlı başlıklarla yorumladık; bunun amacı clustering sonucunu rapor ve sunumda açıklanabilir hale getirmekti.
